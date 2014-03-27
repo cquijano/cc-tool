@@ -1,0 +1,10 @@
+# SmartRF05 Evaluation Board
+ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="0451", ATTRS{idProduct}=="16a0", MODE="0666"
+
+# SmartRF04 Evaluation Board
+ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="11a0", ATTRS{idProduct}=="db20", MODE="0666"
+ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="11a0", ATTRS{idProduct}=="eb20", MODE="0666"
+
+# CC Debugger
+ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="0451", ATTRS{idProduct}=="16a2", MODE="0666"
+

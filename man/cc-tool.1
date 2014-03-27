@@ -1,0 +1,186 @@
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.
+.TH cc-tool 1 "March 01 2013" "cc-tool 0.26" "USER COMMANDS"
+.
+.SH NAME
+cc-tool \- control Texas Instruments CC Debugger
+.
+.SH SYNOPSIS
+.B cc-tool 
+[options]
+.
+.SH DESCRIPTION
+.B cc-tool 
+provides support of Texas Instruments CC Debugger and several evaluation boards to program TI 8051-based System-On-Chip devices
+.
+.SH SUPPORTED DEVICES
+.B CC Debugger
+(VID: 0x0451 PID: 0x16a2)
+.br
+.B SmartRF04 Evaluation Board
+(VID: 0x11a0 PID: 0xdb20)
+.br
+.B SmartRF04 Evaluation Board (Chinese)
+(VID: 0x11a0 PID: 0xeb20)
+.br
+.B SmartRF05 Evaluation Board
+(VID: 0x0451 PID: 0x16a0)
+.
+.SH SUPPORTED TARGETS
+CC2540 CC2541 CC2543 CC2544 CC2545 CC2530 CC2531 CC2533 CC2430 CC2431 CC2510 CC2511 CC1110 CC1111
+.
+.SH OPTIONS
+.TP
+.B \-h, \-\-help
+print help message
+.
+.TP
+.B \-d, \-\-device bus_number:device_number
+set programmer device usb address.
+The option should be used only if several CC Debugger devices connected to the system simultaneously.
+(you can use lsusb utility to enumerate devices connected to the system)
+.
+.TP
+.B \-f, \-\-fast                
+set fast debug interface speed (by default: slow)
+.
+.TP
+.B \-i, \-\-read-info-page [file_name] 
+read target info page (if target supports any). If no file-name specified data will be send to standard output.
+.
+.TP
+.B \-r, \-\-read file_name 
+read flash memory and save to the specified file
+.
+.TP
+.B \-a, \-\-read-mac-address
+read target's mac address(es) (if target supports any).
+.
+.TP
+.B \-b, \-\-write-mac-address xx:xx:xx:xx:xx:xx[:xx:xx]
+write target's secondary mac address (if target supports any). 
+mac address should be specified in hex notation, MSB first. The length of the address must be 6 or 8 bytes depending on target.
+.		
+.TP
+.B \-p, \-\-preserve-mac-address
+before erasing target (secondary) mac address is read out and will be written back after flash programming.    
+.
+.TP
+.B \-e, \-\-erase               
+erase flash memory completely and reset lock bits
+.
+.TP
+.B \-w, \-\-write file_name[,offset] 
+write specified file into flash memory. Optional offset value (in decimal) is an absolute target flash 
+address and supported only for binary files. Option
+.I --write
+may be specified several times to build composite flash image from several hex and/or binary files, 
+apply binary patches etc. Files will be merged in the order they appear in the command line.
+.
+.TP
+.B \-v, \-\-verify [method]            
+verify flash after writing. Method can be
+.I crc
+(default) or 
+.I read.
+Method 
+.I read
+means that after writing all modified flash content is read back and compared to input flash image.
+Method 
+.I crc 
+means that after writing is completed target is configured to calculate 
+CRC-16 over own flash and send results back so it ca be compared to crc of the input flash image.
+Method crc is much faster against read out all flash data.
+.
+.TP
+.B \-t, \-\-test               
+search for programmer and target and print various information of them.
+.
+.TP
+.B \-l, \-\-lock lock_data
+specify lock data as hex string or list of lock qualifiers.  
+Hex data must be exactly 1 byte (2 hex digits) or 16 bytes (32 hex digits), LSB first, depending on target. 
+Lock qualifiers correspond to lock bit of target (see target datasheet). Not all targets support all qualifiers.
+Qualifiers are:
+.RS 10
+.I debug
+- debug lock bit
+.RE
+.RS 10
+.I boot
+- boot lock bit
+(for targets CC111x, CC243x, CC251x)
+.RE
+.RS 10
+.I pages[:n[,k[,x-y]]]
+- specify what pages to lock (starting with 0), if target support per-page lock.
+(for targets CC253x, CC254x)
+.RE
+.RS 10
+.I flash[:a]
+- specify the size in KB of the upper flash area to lock if target support per-flash-area-size lock
+(for targets CC111x, CC243x, CC251x)
+.RE
+Qualifier list is delimited by semicolon (See example section).
+.TP
+.B \-\-log [log_file]
+create log file with all operations performed. Useful for debugging cc-tool itself. 
+Warning: if write operations is performed log file will also contain the written image!
+.
+.TP
+.B \-\-reset                    
+perform target reset. There's no need to use this option along with others because reset is performed anyway when needed
+.
+.TP
+.B \-n, \-\-name target_name            
+specify target name e.g. CC2530 etc. If specified target does not match
+detected one no further actions are performed. This option is not required.
+.
+.TP
+.B \-s, \-\-flash-size specify target flash size            
+specify target flash size in kilobytes. This option is required for any actions with MAC address when target is CC2430	
+.
+.SH SUPPORTED FILE FORMATS
+Supported image file formats are Intel hex or binary. Format will be determined automatically by file extention (hex or bin)
+or my be specified explicitly by adding 
+.I ,bin
+or
+.I ,hex
+after file name. See EXAMPLES section.
+.
+.SH EXAMPLES
+.TP
+Read entire flash into binary file image.xxx
+.B cc-tool
+-r image.xxx,bin
+.TP
+Erase flash, write intel hex file image.hex and verify flash using default method
+.B cc-tool
+-v -e -w image.hex
+.TP
+Merge file image.hex and patch.bin (at offset 80), write resulting image, verify flash using read method
+.B cc-tool
+-v read -w image.hex --write patch.bin,80
+.TP
+Set debug lock bit
+.B cc-tool
+--lock debug
+.TP
+Set debug lock bit and lock pages 0,1,2,3,4
+.B cc-tool
+--lock debug;pages:0-4
+.TP
+Set debug lock bit, boot lock bit, and set lock size 8K
+.B cc-tool
+--lock debug;boot;flash:8
+.
+.SH EXIT STATUS
+.B cc-tool
+returns a zero exist status if all action were performed successfully.
+Non zero is returned in case of failure.
+.
+.SH AUTHOR
+George Stark (george-u (at) yandex.com)
+.
