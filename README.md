@@ -1,4 +1,4 @@
 cc-tool
 =======
 
-Support for Texas Instruments CC Debugger in Linux
+cc-tool provides support for Texas Instruments CC Debugger for Linux OS in order to program 8051-based System-On-Chip devices: CC254x CC253x CC243x CC251x CC111x
