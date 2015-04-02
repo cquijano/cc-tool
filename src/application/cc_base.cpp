@@ -75,7 +75,7 @@ void CC_Base::init_options(po::options_description &desc)
 
 	desc.add_options()
 		("device,d", po::value<String>(&option_device_address_),
-				"set programmer deivce usb address 'bus:device'");
+				"set programmer device usb address 'bus:device'");
 
 	desc.add_options()
 		("fast,f", "set fast debug interface speed (by default: slow)");

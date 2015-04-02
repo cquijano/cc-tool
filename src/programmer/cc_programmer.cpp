@@ -278,7 +278,7 @@ void CC_Programmer::enter_debug_mode()
 	memcpy(&command[0x15], programmer_info_.debugger_id.c_str(), programmer_info_.debugger_id.size());
 
 	usb_device_.control_write(LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_OUT,
-			USB_SET_CHIP_INFO, 1, 1, &command[0], command.size());
+			USB_SET_CHIP_INFO, 1, 0, &command[0], command.size());
 }
 
 //==============================================================================
