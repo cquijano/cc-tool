@@ -1,11 +1,11 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.59)
-AC_INIT(cc-tool, 0.26, george-u@yandex.com)
+AC_PREREQ([2.71])
+AC_INIT([cc-tool],[0.26],[george-u@yandex.com])
 AM_INIT_AUTOMAKE([no-dependencies foreign subdir-objects])
 AM_SILENT_RULES([yes])
 AC_CONFIG_MACRO_DIR([m4])
-AC_PROG_LIBTOOL
+LT_INIT
 AC_PROG_CXX
 
 BOOST_REQUIRE([1.39])
